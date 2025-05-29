@@ -42,7 +42,7 @@ buisnessSuffex = ["LLC", "INC", "LTD", "PTY", "COMPANY"]
 # this breaks down the table in the search table
 def get_table_value(label):
     xpath = f'//tr[td[1][normalize-space()="{label}"]]/td[2]'
-    element = WebDriverWait(driver, 10).until(
+    element = WebDriverWait(driver, 45).until(
         EC.presence_of_element_located((By.XPATH, xpath))
     )
     return element.text.strip()
@@ -104,7 +104,7 @@ time.sleep(10)
 
 # navigate to realist -------------------------------
 
-button = WebDriverWait(driver, 10).until(
+button = WebDriverWait(driver, 45).until(
     EC.element_to_be_clickable((By.XPATH, '//img[@alt="Realist"]/parent::div'))
 )
 button.click()
@@ -114,7 +114,11 @@ time.sleep(10)
 
 # begin search -------------------------------
 
-upper = 10
+# hello future william next things are
+# lower 100
+# upper 500
+
+upper = 100
 lower = 0
 progress_bar = tqdm(total=upper-lower, desc="Progress")
 
@@ -128,54 +132,122 @@ for index, i in enumerate(addresses[lower:upper]):
     propLastName = i[2]
     propAddy = i[3]
     propCity = i[4]
+    propState = i[5]
+    propZip = i[6]
     OwnerName = billAddress = billCityState = billCity = billState = billState = None
     
     try:
-        link = WebDriverWait(driver, 10).until(
+        print("\n\nNew Loop Bitch ass--------------------------------------------")
+        
+        # search the terms
+        link = WebDriverWait(driver, 45).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//a[text()="Search" and contains(@class, "dashboard-style")]'))
         )
         link.click()
 
         iAddy = propAddy + ", " + propCity
+        print(f"Searching for thjis {iAddy}")
 
-        input_field = WebDriverWait(driver, 10).until(
+        input_field = WebDriverWait(driver, 45).until(
         EC.presence_of_element_located((By.XPATH, '//input[@placeholder="123 Main St, City, State Zip"]')))
         input_field.clear()
         input_field.send_keys(iAddy)
-        search_button = WebDriverWait(driver, 10).until(
+        search_button = WebDriverWait(driver, 45).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class, "search-btn") and text()=" Search "]'))
         )
+        
+        time.sleep(5)
         search_button.click()
         
         
         # handler for the too many address search
         try:
-            close_btn = WebDriverWait(driver, 10).until(
+            close_btn = WebDriverWait(driver, 45).until(
                 EC.element_to_be_clickable((By.XPATH, '//button[@aria-label="Close"]'))
             )
             close_btn.click()
             errors.append(i)
-            print("Modal closed.")
+            progress_bar.update(1)
+            print("Modal closed Moving on to next one")
             continue
         except TimeoutException:
             print("Modal did not appear — nothing to close.")
+            
+        except:
+            print("Modal did not appear — nothing to close. bluh ")
 
         # get contents from the table found in the search
+        # the problem is here
         
-        billZip = get_table_value("Tax Billing Zip")
-        OwnerName = get_table_value("Owner Name")
-        billAddress = get_table_value("Tax Billing Address")
-        billCityState = get_table_value("Tax Billing City & State")
-        billCity, billState = billCityState.split(",")
-        billState = billState.strip()
-        billZip = get_table_value("Tax Billing Zip")
+        print("here here here here")
+   
+        time.sleep(20)
+        
+        
+        
+        # wait until the table is in the DOM and at least one row is rendered
+        table = WebDriverWait(driver, 45).until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "table.data-table.d-flex"))
+        )
+
+        # build a quick “label ➜ value” dictionary from the rows
+        data = {}
+        for row in table.find_elements(By.CSS_SELECTOR, "tr.data-table__row"):
+            cells = row.find_elements(By.CSS_SELECTOR, "td.cell")
+            if len(cells) >= 2:
+                label = cells[0].text.strip()          # e.g. “Owner Name”
+                value = cells[1].text.strip()          # e.g. “Bizier Brendan”
+                data[label] = value
+
+        # pull out the fields you care about
+        OwnerName   = data.get("Owner Name")          # first owner on record
+        billAddress     = data.get("Tax Billing Address")
+        billCityState  = data.get("Tax Billing City & State", "")
+        billZip    = data.get("Tax Billing Zip")
+
+        # split city and state safely
+        billCity, billState = ("", "")
+        if "," in billCityState:
+            city, state = [s.strip() for s in billCityState.split(",", 1)]
+
+        print(OwnerName, billAddress, billCity, billState, billZip)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+        # time.sleep(10)
+        
+        # billZip = get_table_value("Tax Billing Zip")
+        # OwnerName = get_table_value("Owner Name")
+        # billAddress = get_table_value("Tax Billing Address")
+        # billCityState = get_table_value("Tax Billing City & State")
+        # billCity, billState = billCityState.split(",")
+        # billState = billState.strip()
+        # billZip = get_table_value("Tax Billing Zip")
+        
+        # testing
         
         print(OwnerName)
         print("here here here")
+        print(f"name -> {OwnerName}")
 
-        saleDate = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
+        saleDate = WebDriverWait(driver, 45).until(EC.presence_of_element_located((
         By.XPATH,
         '//p[text()="Sale Date"]/following-sibling::span' )))
         
@@ -190,6 +262,10 @@ for index, i in enumerate(addresses[lower:upper]):
         # different send to NewOwner
         elif check_date(saleDate):
             NewOwners.append([OwnerName,
+                              propAddy,
+                              propCity,
+                              propState,
+                              propZip,
                               billAddress,
                               billCity,
                               billState,
@@ -200,15 +276,16 @@ for index, i in enumerate(addresses[lower:upper]):
         else: 
             TooRecent.append(i)
             
-        time.sleep(5)
 
     except Exception as e: 
-        print(f"Error Has occured --> {e}")
-        time.sleep(15)
+        print(f"\nERROR ERROR ---------------------------------------------------------")
+        print(e)
         print(f"found part {OwnerName, billAddress, billCity}")
-        print(f"\n\n\n the string we have {i}")
-        
+        print(f"\n the string we have {i}")
+        print("-------------------------------------------------------------------------------------\n")
         errors.append(i)
+        time.sleep(15)
+
         
     progress_bar.update(1)
 progress_bar.close()
@@ -223,7 +300,7 @@ driver.quit()
 # New Contacts -> this the only one that is different
 with open("realist/NewOwners.csv", "w", newline='') as outputfile:
     writer = csv.writer(outputfile)
-    writer.writerow(["Owner Name", "Billing Address", "Billing City", "Billing State", "Billing Zip"])
+    writer.writerow(["Owner Name", "Property Address", "Property City", "Property State", "Property Zip", "Billing Address", "Billing City", "Billing State", "Billing Zip"])
     for i in NewOwners: 
         writer.writerow(i)
             
