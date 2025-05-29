@@ -1,0 +1,5 @@
+requests>=2.0.0
+csv
+selenium==3.141.0
+random
+time
