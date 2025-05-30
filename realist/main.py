@@ -115,7 +115,7 @@ time.sleep(10)
 # begin search -------------------------------
 
 lower = 0
-upper = 50
+upper = 20
 
 progress_bar = tqdm(total=upper-lower, desc="Progress")
 
@@ -144,8 +144,9 @@ for index, i in enumerate(addresses[lower:upper]):
         link.click()
 
         iAddy = propAddy + ", " + propCity
-        print(f"Searching Address -> {iAddy}")
-        print(f"Searching Name -> {fullName}")
+        print(f"Searching")
+        print(f"    Address -> {iAddy}")
+        print(f"    Name -> {fullName}")
 
         input_field = WebDriverWait(driver, 45).until(
         EC.presence_of_element_located((By.XPATH, '//input[@placeholder="123 Main St, City, State Zip"]')))
@@ -169,12 +170,13 @@ for index, i in enumerate(addresses[lower:upper]):
             errors.append(i)
             progress_bar.update(1)
             print("Modal closed Moving on to next one")
+            print(f"added to errors\n Total -> {len(errors)}")
             continue
         except TimeoutException:
-            print("Modal did not appear — nothing to close.")
+            print("Modal did not appear 1")
             
         except:
-            print("Modal did not appear — nothing to close. bluh ")
+            print("Modal did not appear 2")
         
         
         # wait until the table is in the DOM and at least one row is rendered
@@ -202,8 +204,6 @@ for index, i in enumerate(addresses[lower:upper]):
         billCity, billState = ("", "")
         if "," in billCityState:
             city, state = [s.strip() for s in billCityState.split(",", 1)]
-
-        print(OwnerName, billAddress, billCity, billState, billZip)
         
     
         # time.sleep(10)
@@ -219,7 +219,10 @@ for index, i in enumerate(addresses[lower:upper]):
         # testing
         
         print(f"\nFound Stuff")
-        print(f"Name -> {OwnerName}")
+        print(f"    Name -> {OwnerName}")
+        print(f"    BillAddy -> {billAddress}")
+        print(f"    BillCityState -> {billCityState}")
+        
 
         saleDate = WebDriverWait(driver, 45).until(EC.presence_of_element_located((
         By.XPATH,
