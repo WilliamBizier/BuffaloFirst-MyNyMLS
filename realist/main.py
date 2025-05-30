@@ -218,7 +218,7 @@ for index, i in enumerate(addresses[lower:upper]):
         
         # testing
         
-        print(f"Found Stuff\n")
+        print(f"\nFound Stuff")
         print(f"Name -> {OwnerName}")
 
         saleDate = WebDriverWait(driver, 45).until(EC.presence_of_element_located((
@@ -226,7 +226,6 @@ for index, i in enumerate(addresses[lower:upper]):
         '//p[text()="Sale Date"]/following-sibling::span' )))
         
         saleDate = saleDate.text.strip()  # e.g. "12/14/2021"
-        print(saleDate)
 
         # match full name found to current name, and check if its past 9 months
         # same append to SameOwners
@@ -265,9 +264,13 @@ for index, i in enumerate(addresses[lower:upper]):
         print(f"\n Curr string ->  {i}")
         print("\n")
         
+        # implement checking and filtering if already got stuff
+        
         errors.append(i)
         print("Added: Errors")
         print(f"Total -> {len(errors)} ")
+        
+        
         
 
         
