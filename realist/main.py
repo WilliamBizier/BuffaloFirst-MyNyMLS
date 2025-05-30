@@ -114,12 +114,9 @@ time.sleep(10)
 
 # begin search -------------------------------
 
-# hello future william next things are
-# lower 100
-# upper 500
-
-upper = 100
 lower = 0
+upper = 50
+
 progress_bar = tqdm(total=upper-lower, desc="Progress")
 
 errors = []
@@ -147,7 +144,8 @@ for index, i in enumerate(addresses[lower:upper]):
         link.click()
 
         iAddy = propAddy + ", " + propCity
-        print(f"Searching for thjis {iAddy}")
+        print(f"Searching Address -> {iAddy}")
+        print(f"Searching Name -> {fullName}")
 
         input_field = WebDriverWait(driver, 45).until(
         EC.presence_of_element_located((By.XPATH, '//input[@placeholder="123 Main St, City, State Zip"]')))
@@ -177,14 +175,6 @@ for index, i in enumerate(addresses[lower:upper]):
             
         except:
             print("Modal did not appear — nothing to close. bluh ")
-
-        # get contents from the table found in the search
-        # the problem is here
-        
-        print("here here here here")
-   
-        time.sleep(20)
-        
         
         
         # wait until the table is in the DOM and at least one row is rendered
@@ -215,21 +205,6 @@ for index, i in enumerate(addresses[lower:upper]):
 
         print(OwnerName, billAddress, billCity, billState, billZip)
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     
         # time.sleep(10)
         
@@ -243,9 +218,8 @@ for index, i in enumerate(addresses[lower:upper]):
         
         # testing
         
-        print(OwnerName)
-        print("here here here")
-        print(f"name -> {OwnerName}")
+        print(f"Found Stuff\n")
+        print(f"Name -> {OwnerName}")
 
         saleDate = WebDriverWait(driver, 45).until(EC.presence_of_element_located((
         By.XPATH,
@@ -257,7 +231,10 @@ for index, i in enumerate(addresses[lower:upper]):
         # match full name found to current name, and check if its past 9 months
         # same append to SameOwners
         if check_name(OwnerName, fullName, propFirstName, propLastName) and check_date(saleDate):
+            
             SameOwners.append(i)
+            print("Added: Known")
+            print(f"Total -> {len(SameOwners)} ")
 
         # different send to NewOwner
         elif check_date(saleDate):
@@ -270,21 +247,28 @@ for index, i in enumerate(addresses[lower:upper]):
                               billCity,
                               billState,
                               billZip])
-            print(f"New Owwers -> {NewOwners}")
+            print("Added: New Owner")
+            print(f"Total -> {len(NewOwners)}")
             
-        # errors
+        # Too Recent
         else: 
+            
             TooRecent.append(i)
+            print("Added: Too Recent")
+            print(f"Total -> {len(TooRecent)} ")
             
 
     except Exception as e: 
-        print(f"\nERROR ERROR ---------------------------------------------------------")
+        print(f"\nERROR ERROR ")
         print(e)
-        print(f"found part {OwnerName, billAddress, billCity}")
-        print(f"\n the string we have {i}")
-        print("-------------------------------------------------------------------------------------\n")
+        print(f"found part     ->   {OwnerName, billAddress, billCity}")
+        print(f"\n Curr string ->  {i}")
+        print("\n")
+        
         errors.append(i)
-        time.sleep(15)
+        print("Added: Errors")
+        print(f"Total -> {len(errors)} ")
+        
 
         
     progress_bar.update(1)
@@ -298,9 +282,9 @@ driver.quit()
 # print(SameOwners)
 
 # New Contacts -> this the only one that is different
-with open("realist/NewOwners.csv", "w", newline='') as outputfile:
+with open("realist/NewOwners.csv", "a", newline='') as outputfile:
     writer = csv.writer(outputfile)
-    writer.writerow(["Owner Name", "Property Address", "Property City", "Property State", "Property Zip", "Billing Address", "Billing City", "Billing State", "Billing Zip"])
+    # writer.writerow(["Owner Name", "Property Address", "Property City", "Property State", "Property Zip", "Billing Address", "Billing City", "Billing State", "Billing Zip"])
     for i in NewOwners: 
         writer.writerow(i)
             
@@ -313,24 +297,24 @@ header1 = ["Index", "Full Name",
            "Mailing State", "Mailing Zip Code", 
            "Primary Phone", "Phone 1", "Phone 2", 
            "Phone 3", "Email 1"]
-with open("realist/errors.csv", "w", newline='') as outputfile:
+with open("realist/errors.csv", "a", newline='') as outputfile:
     writer = csv.writer(outputfile)
-    writer.writerow(header1)
+    # writer.writerow(header1)
     for i in errors: 
         writer.writerow(i)
         
 
 # Known Contacts
-with open("realist/KnownContacts.csv", "w", newline='') as outputfile:
+with open("realist/KnownContacts.csv", "a", newline='') as outputfile:
     writer = csv.writer(outputfile)
-    writer.writerow(header1)
+    # writer.writerow(header1)
     for i in SameOwners: 
         writer.writerow(i)
 
 
 # Too Recent
-with open("realist/TooRecent.csv", "w", newline='') as outputfile:
+with open("realist/TooRecent.csv", "a", newline='') as outputfile:
     writer = csv.writer(outputfile)
-    writer.writerow(header1)
+    # writer.writerow(header1)
     for i in TooRecent: 
         writer.writerow(i)
