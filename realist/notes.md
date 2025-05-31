@@ -1,5 +1,5 @@
 # Things to do
-
+- invlaid session ID after so long on the site
 - no search results for search
 - make better name filtering
   - think LLC, INC last names to make sure that they are different

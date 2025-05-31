@@ -17,6 +17,9 @@ import sys
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
+# from utils
+import utils
+
 # load site password passed through the env -------------------------------
 load_dotenv()
 username = os.getenv("USERNAME")
@@ -85,37 +88,13 @@ def check_date(saleDate):
 
 
 # open up MyNyMLS -------------------------------
-
-driver = webdriver.Chrome()
-devUrl = 'https://nys.mlsmatrix.com/Matrix'
-driver.get(devUrl)
-
-username_input = driver.find_element(By.NAME, "username")
-password_input = driver.find_element(By.NAME, "password")
-username_input.send_keys(username)
-password_input.send_keys(passwd)
-time.sleep(random.randint(1, 10))
-driver.find_element(By.ID, "loginbtn").click()
-time.sleep(random.randint(1, 10))
-driver.find_element(
-    By.CSS_SELECTOR, "a[href*='javascript:history.back()']").click()
-
-time.sleep(10)
-
-# navigate to realist -------------------------------
-
-button = WebDriverWait(driver, 45).until(
-    EC.element_to_be_clickable((By.XPATH, '//img[@alt="Realist"]/parent::div'))
-)
-button.click()
-driver.switch_to.window(driver.window_handles[-1])  # switch tabs
-time.sleep(10)
+driver = utils.start_realist()
 
 
 # begin search -------------------------------
 
 lower = 0
-upper = 300
+upper = 10
 
 progress_bar = tqdm(total=upper-lower, desc="Progress")
 
@@ -272,6 +251,11 @@ for index, i in enumerate(addresses[lower:upper]):
         errors.append(i)
         print("Added: Errors")
         print(f"Total -> {len(errors)} ")
+        
+        # restart in case the session runs out
+        if "invalid session id" in str(e):
+            driver.quit()
+            driver = utils.start_realist()
         
         
         
