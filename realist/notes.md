@@ -3,6 +3,8 @@
 - no search results for search
 - make better name filtering
   - think LLC, INC last names to make sure that they are different
+- no address do not search
+
 
 - there is this chance we can get info necessary and it defaults to the error, swap this to add to the right list
 - remove debuggign statements
