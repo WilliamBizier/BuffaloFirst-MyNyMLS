@@ -115,7 +115,7 @@ time.sleep(10)
 # begin search -------------------------------
 
 lower = 0
-upper = 20
+upper = 300
 
 progress_bar = tqdm(total=upper-lower, desc="Progress")
 
