@@ -94,7 +94,7 @@ driver = utils.start_realist()
 # begin search -------------------------------
 
 lower = 0
-upper = 10
+upper = 200
 
 progress_bar = tqdm(total=upper-lower, desc="Progress")
 
@@ -253,7 +253,7 @@ for index, i in enumerate(addresses[lower:upper]):
         print(f"Total -> {len(errors)} ")
         
         # restart in case the session runs out
-        if "invalid session id" in str(e):
+        if "invalid session id" in str(e) or "element click intercepted" in str(e):
             driver.quit()
             driver = utils.start_realist()
         
