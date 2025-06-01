@@ -112,6 +112,13 @@ for index, i in enumerate(addresses[lower:upper]):
     propZip = i[6]
     OwnerName = billAddress = billCityState = billCity = billState = billState = None
     
+    if addresses == "," or addresses == None: 
+        print("No addy is present")
+        errors.append(i)
+        progress_bar.update(1)
+        continue
+        
+    
     try:
         print("\n\nNew Loop Bitch ass--------------------------------------------")
         
